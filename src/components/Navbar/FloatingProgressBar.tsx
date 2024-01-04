@@ -1,4 +1,10 @@
-import React, { Dispatch, memo, SetStateAction, useCallback, useState } from "react";
+import React, {
+  Dispatch,
+  memo,
+  SetStateAction,
+  useCallback,
+  useState,
+} from "react";
 import {
   Box,
   ButtonGroup,
@@ -16,22 +22,22 @@ type FloatingProgressBarProps = {
 };
 
 type ProgressBarProps = {
-    progress: number;
+  progress: number;
 } & ButtonGroupProps;
 
 const ProgressBar = ({ progress, ...props }: ProgressBarProps) => (
   <ButtonGroup isAttached {...props}>
     <Box mt={4}>
-        <Progress value={progress} />
-        <Text>
-            Progress Bar
-        </Text>
+      <Progress value={progress} />
+      <Text>Progress Bar</Text>
     </Box>
   </ButtonGroup>
 );
 
-const FloatingProgressBar = ({ isActive, progress }: FloatingProgressBarProps) => {
-
+const FloatingProgressBar = ({
+  isActive,
+  progress,
+}: FloatingProgressBarProps) => {
   return (
     <AnimatePresence>
       {isActive && (
@@ -60,5 +66,6 @@ const FloatingProgressBar = ({ isActive, progress }: FloatingProgressBarProps) =
     </AnimatePresence>
   );
 };
+
 
 export default FloatingProgressBar;

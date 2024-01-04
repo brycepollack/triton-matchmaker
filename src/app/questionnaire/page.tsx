@@ -1,17 +1,18 @@
 "use client";
 
-import { Button, Box, Heading, SimpleGrid, Text, useColorModeValue, Container, VStack } from "@chakra-ui/react";
+import { Button, Box, Heading, SimpleGrid, Text, useColorModeValue, Container, VStack, Flex } from "@chakra-ui/react";
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 import { Hero, Section } from "@/components/Layout";
 import { DynamicNavbar } from "@/components/Navbar";
-import { UserInputItem, QuestionnaireItem }  from '@/components/Questionnaire';
+import { UserInputItem, RatingItem }  from '@/components/Questionnaire';
 
 const Questionnaire = () => {
 
 	const [userInfo, setUserInfo] = useState<{ [key: string]: string | null }>({});
-	const [answers, setAnswers] = useState<{ [key: string]: number | null }>({});
+	const [userAnswers, setUserAnswers] = useState<{ [key: string]: number | null }>({});
+	const [partnerAnswers, setPartnerAnswers] = useState<{ [key: string]: number | null }>({});
 	const [numAnsweredQuestions, setNumAnsweredQuestions] = useState(0);
 
 	const userInfoQuestions = [
@@ -27,11 +28,11 @@ const Questionnaire = () => {
 		"You prefer going to parties over staying in for the night",
 		"You prefer eating out over cooking at home",
 		"You prefer indoor activities to outdoor activities",
-		"Family plays an important role in your life",
-		"Religion or spirituality plays an important role in your life",
+		"Family plays an important role in my life",
+		"Religion or spirituality plays an important role in my life",
 	];
 
-	const progressBarPercentage = (numAnsweredQuestions / questions.length) * 100;
+	const progressBarPercentage = (numAnsweredQuestions / (questions.length * 2)) * 100;
 
 	const handleUserInputAnswer = (question: string, answer: string) => {
 		setUserInfo((prevAnswers) => ({
@@ -40,20 +41,32 @@ const Questionnaire = () => {
 		}));
 	};
 
-	const handleQuestionnaireAnswer = (question: string, answer: number) => {
-		if(answers[question] === undefined){
-			setNumAnsweredQuestions(numAnsweredQuestions + 1);
+	const handleRatingAnswer = (question: string, answer: number, type: number) => {
+		switch (type) {
+			case 0: // user
+				if(userAnswers[question] === undefined){
+					setNumAnsweredQuestions(numAnsweredQuestions + 1);
+				}
+				setUserAnswers((prevAnswers) => ({
+					...prevAnswers,
+					[question]: answer,
+				}));
+			case 1: // partner
+				if(partnerAnswers[question] === undefined){
+					setNumAnsweredQuestions(numAnsweredQuestions + 1);
+				}
+				setPartnerAnswers((prevAnswers) => ({
+					...prevAnswers,
+					[question]: answer,
+				}));
 		}
-		setAnswers((prevAnswers) => ({
-		  ...prevAnswers,
-		  [question]: answer,
-		}));
 	};
 
 	const handleSubmit = () => {
 		// Replace this with your actual API call to send answers to the database
 		console.log('User Info:', userInfo);
-		console.log('Answers:', answers);
+		console.log('User answers:', userAnswers);
+		console.log('Partner answers:', partnerAnswers);
 	};
 
     return (
@@ -106,21 +119,29 @@ const Questionnaire = () => {
 			</Container>
         </Section>
 
-		<Section id="question-1" variant="container">
+		<Section id="question-section-1" variant="container">
 			<Heading as="h1" size="xl" mb={8}>
-            Question 1
+            Lifestyle
             </Heading>
 
 			<Container maxW="xl" centerContent>
-				<VStack spacing={8} align="stretch" minW="100%">
-					{questions.map((question) => (
-					<QuestionnaireItem
-						key={question}
-						question={question}
-						onAnswer={(answer: number) => handleQuestionnaireAnswer(question, answer)}
-					/>
-					))}
-				</VStack>
+				<VStack spacing={8} align="stretch">
+				{questions.map((question) => (<>
+				
+					<Heading as="h3" size="md" mb={4} textAlign="center">{question}</Heading>
+					<Flex justify="space-around">
+						<RatingItem
+						// key={question}
+						title={"My answer"}
+						onAnswer={(answer: number) => handleRatingAnswer(question, answer, 0)}
+						/>
+						<RatingItem
+						// key={question}
+						title={"Partner answer"}
+						onAnswer={(answer: number) => handleRatingAnswer(question, answer, 1)}
+						/>
+					</Flex></>
+				))}</VStack>
 			</Container>
 		</Section>
 
