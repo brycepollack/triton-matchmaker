@@ -1,0 +1,1 @@
+export { default as tritonlogo } from "./tritonlogo.svg";
