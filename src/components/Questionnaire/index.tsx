@@ -1,2 +1,2 @@
-export { default as QuestionnaireItem } from "./QuestionnaireItem";
+export { default as RatingItem } from "./RatingItem";
 export { default as UserInputItem } from "./UserInputItem";
