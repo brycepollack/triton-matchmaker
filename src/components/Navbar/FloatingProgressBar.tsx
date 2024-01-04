@@ -21,19 +21,6 @@ type FloatingProgressBarProps = {
   progress: number;
 };
 
-type ProgressBarProps = {
-  progress: number;
-} & ButtonGroupProps;
-
-const ProgressBar = ({ progress, ...props }: ProgressBarProps) => (
-  <ButtonGroup isAttached {...props}>
-    <Box mt={4}>
-      <Progress value={progress} />
-      <Text>Progress Bar</Text>
-    </Box>
-  </ButtonGroup>
-);
-
 const FloatingProgressBar = ({
   isActive,
   progress,
@@ -45,22 +32,17 @@ const FloatingProgressBar = ({
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           exit={{ y: -100 }}
-          transition={{ duration: 0.5, type: "spring" }}
+          transition={{ duration: 0.5, type: "tween" }}
           transformTemplate={(_, generated) => `translateX(-50%) ${generated}`}
           style={{
             position: "fixed",
-            top: 8,
+            top: 0,
             left: "50%",
             zIndex: 100,
+            width: "100%"
           }}
         >
-          <ProgressBar
-            progress={progress}
-            border="1px solid"
-            borderColor="whiteAlpha.300"
-            borderRadius="full"
-            backdropFilter="blur(16px)"
-          />
+        <Progress colorScheme='teal' height='16px' value={progress} position="fixed" top={0} zIndex={999} width={"100%"}/>
         </motion.div>
       )}
     </AnimatePresence>

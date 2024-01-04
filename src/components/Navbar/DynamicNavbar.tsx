@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useRef } from "react";
-import { Box } from "@chakra-ui/react";
+import { Box, Progress } from "@chakra-ui/react";
 import { FloatingProgressBar, FloatingNavbar, Navbar } from "@/components/Navbar";
 import { useInView } from "@/hooks";
 
 type DynamicNavbarProps = {
   progressBar: boolean;
-  progressBarPercentage: number;
+  progress: number;
   tabs: string[];
 };
 
-const DynamicNavbar = ({ progressBar, progressBarPercentage, tabs }: DynamicNavbarProps) => {
+const DynamicNavbar = ({ progressBar, progress, tabs }: DynamicNavbarProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const onScreen = useInView(ref);
 
@@ -19,7 +19,7 @@ const DynamicNavbar = ({ progressBar, progressBarPercentage, tabs }: DynamicNavb
     <>
       <Navbar ref={ref} tabs={tabs} />
       {progressBar && (
-        <FloatingProgressBar isActive={!onScreen} progress={progressBarPercentage} />
+        <FloatingProgressBar isActive={!onScreen} progress={progress} />
       )}
     </>
   );
