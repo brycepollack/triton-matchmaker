@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Box, Heading, SimpleGrid, Text, useColorModeValue, Container, VStack, Flex } from "@chakra-ui/react";
+import { Button, Box, Heading, SimpleGrid, Text, useColorModeValue, Container, VStack, Flex, Progress } from "@chakra-ui/react";
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
@@ -14,6 +14,7 @@ const Questionnaire = () => {
 	const [userAnswers, setUserAnswers] = useState<{ [key: string]: number | null }>({});
 	const [partnerAnswers, setPartnerAnswers] = useState<{ [key: string]: number | null }>({});
 	const [numAnsweredQuestions, setNumAnsweredQuestions] = useState(0);
+	const [progress, setProgress] = useState(0)
 
 	const userInfoQuestions = [
 		"What's your name?",
@@ -32,8 +33,6 @@ const Questionnaire = () => {
 		"Religion or spirituality plays an important role in my life",
 	];
 
-	const progressBarPercentage = (numAnsweredQuestions / (questions.length * 2)) * 100;
-
 	const handleUserInputAnswer = (question: string, answer: string) => {
 		setUserInfo((prevAnswers) => ({
 		  ...prevAnswers,
@@ -44,23 +43,34 @@ const Questionnaire = () => {
 	const handleRatingAnswer = (question: string, answer: number, type: number) => {
 		switch (type) {
 			case 0: // user
+				console.log("here 0")
 				if(userAnswers[question] === undefined){
-					setNumAnsweredQuestions(numAnsweredQuestions + 1);
+					updateProgress()
 				}
 				setUserAnswers((prevAnswers) => ({
 					...prevAnswers,
 					[question]: answer,
 				}));
+				return
 			case 1: // partner
+				console.log("here 1")
 				if(partnerAnswers[question] === undefined){
-					setNumAnsweredQuestions(numAnsweredQuestions + 1);
+					updateProgress()
 				}
 				setPartnerAnswers((prevAnswers) => ({
 					...prevAnswers,
 					[question]: answer,
 				}));
+				return
 		}
 	};
+
+	const updateProgress = () => {
+		console.log("hit")
+		let temp = numAnsweredQuestions + 1
+		setNumAnsweredQuestions(temp)
+		setProgress((temp / (questions.length * 2)) * 100)
+	}
 
 	const handleSubmit = () => {
 		// Replace this with your actual API call to send answers to the database
@@ -71,36 +81,7 @@ const Questionnaire = () => {
 
     return (
         <>
-        <Box position="relative">
-            <Box
-            position="absolute"
-            insetX={0}
-            top={-40}
-            zIndex={-10}
-            overflow="hidden"
-            aria-hidden="true"
-            filter="auto"
-            blur="10rem"
-            >
-            <Box
-                position="relative"
-                left={["calc(50%-11rem)", "calc(50%-30rem)"]}
-                aspectRatio="1155/678"
-                w={["36.125rem", "72.1875rem"]}
-                transform="translateX(-50%) rotate(30deg)"
-                clipPath="polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
-                bgGradient={useColorModeValue(
-                "linear(to-tr, #ff80b5, #9089fc)",
-                "linear(to-tr, #4f46e5, #80caff)"
-                )}
-                opacity={0.3}
-            />
-            </Box>
-            
-            <DynamicNavbar progressBar={true} progressBarPercentage={progressBarPercentage} tabs={[]} />
-            
-        </Box>
-
+        <DynamicNavbar progressBar={true} progress={progress} tabs={[]} />
         <Section id="user-info" variant="container">
             <Heading as="h1" size="xl" mb={8}>
             User Info
@@ -125,29 +106,39 @@ const Questionnaire = () => {
             </Heading>
 
 			<Container maxW="xl" centerContent>
-				<VStack spacing={8} align="stretch">
+				<VStack spacing={16} align="stretch">
 				{questions.map((question) => (<>
 				
-					<Heading as="h3" size="md" mb={4} textAlign="center">{question}</Heading>
-					<Flex justify="space-around">
+					<VStack spacing={4} align="stretch">
+					<Heading as="h3" size="md" mb={4} textAlign="center" marginBottom={0}>{question}</Heading>
+					<Flex justify="space-around" gap="6">
+
 						<RatingItem
-						// key={question}
+						key={`${question}-0`}
 						title={"My answer"}
 						onAnswer={(answer: number) => handleRatingAnswer(question, answer, 0)}
 						/>
+
 						<RatingItem
-						// key={question}
+						key={`${question}-1`}
 						title={"Partner answer"}
 						onAnswer={(answer: number) => handleRatingAnswer(question, answer, 1)}
 						/>
-					</Flex></>
+						
+					</Flex>
+					</VStack>
+					</>
 				))}</VStack>
 			</Container>
 		</Section>
 
-        <Button onClick={handleSubmit}>
-			Submit
-		</Button>
+		<Section id="submit-section">
+			<Container centerContent>
+			<Button onClick={handleSubmit} colorScheme="teal">
+				Submit
+			</Button>
+			</Container>
+		</Section>
         </>
     );
 };

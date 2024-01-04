@@ -40,7 +40,7 @@ const Home = () => {
         </Box>
         
         <Hero>
-          <DynamicNavbar progressBar={false} progressBarPercentage={0} tabs={tabs} />
+          <DynamicNavbar progressBar={false} progress={0} tabs={tabs} />
         </Hero>
         
       </Box>
